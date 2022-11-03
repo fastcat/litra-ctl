@@ -18,10 +18,23 @@ binary: $(BINARY)
 ${BINARY}: Makefile go.mod go.sum $(SOURCES)
 	go build -v -o $(BINARY) $(MAIN)
 
-install: binary
+preinstall: binary
+	rm -f packaging/completion/*
+	mkdir -p packaging/completion
+	set -eu ; for s in bash zsh fish ; do \
+		./$(BINARY) completion $$s >packaging/completion/$(BINARY).$$s ; \
+	done
+.PHONY: preinstall
+install: binary preinstall
+	$(MAKE) install-only
+.PHONY: install
+install-only:
 	$(SUDO) install -v $(BINARY) $(PREFIX)/usr/bin/
 	$(SUDO) install -v -m 644 packaging/udev-rules/*.rules $(PREFIX)/lib/udev/rules.d/
-.PHONY: install
+	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).bash /etc/bash_completion.d/$(BINARY)
+	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).zsh /usr/share/zsh/vendor-completions/_$(BINARY)
+	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).fish /usr/share/fish/vendor_completions.d/$(BINARY).fish
+.PHONY: install-only
 postinstall:
 	$(SUDO) ./packaging/post-install.sh
 .PHONY: postinstall
@@ -35,10 +48,10 @@ uninstall:
 
 packages: package-deb
 .PHONY: packages
-package-deb: binary
+package-deb: binary preinstall
 # extra quoting on some args to work around checkinstall bugs:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=785441
-	cd packaging/checkinstall && fakeroot checkinstall \
+	set -eu ; cd packaging/checkinstall && fakeroot checkinstall \
 		--type=debian \
 		--install=no \
 		--fstrans=yes \
@@ -52,10 +65,11 @@ package-deb: binary
 		--maintainer="'Matthew Gabeler-Lee <cheetah@fastcat.org>'" \
 		--reset-uids=yes \
 		--backup=no \
-		$(MAKE) -C ../../ SUDO= install \
+		$(MAKE) -C ../../ SUDO= install-only \
 		</dev/null
 .PHONY: package-deb
 
 clean:
 	rm -vf $(BINARY) packaging/checkinstall/*.deb
+	rm -vf packaging/completion/$(BINARY).*
 .PHONY: clean
