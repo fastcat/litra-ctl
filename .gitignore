@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+litra-ctl
+
+packaging/*checkinstall/*.deb
+# everything in doc-pak/ is copied from elsewhere
+packaging/*checkinstall/doc-pak/*

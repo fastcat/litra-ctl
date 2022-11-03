@@ -1,0 +1,16 @@
+# pattern adapted from solaar
+
+ACTION != "add", GOTO="litra_end"
+SUBSYSTEM != "usb", GOTO="litra_end"
+
+ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c900", GOTO="litra_apply"
+GOTO="litra_end"
+
+LABEL="litra_apply"
+# legacy plugdev style:
+#MODE="0666", GROUP="plugdev"
+TAG+="uaccess", TAG+="udev-acl"
+
+LABEL="litra_end"
+
+# vim: ft=udevrules
