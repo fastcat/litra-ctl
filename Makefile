@@ -59,7 +59,7 @@ package-deb: binary preinstall
 		--pkgname=litra-ctl \
 		--pkgversion=$(PKGVER) \
 		--pkgrelease=$(PKGREL) \
-		--pkglicense=GPL-3 \
+		--pkglicense=MIT \
 		--pkggroup=utils \
 		--pkgsource=https://github.com/fastcat/litra-ctl \
 		--maintainer="'Matthew Gabeler-Lee <cheetah@fastcat.org>'" \
