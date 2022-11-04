@@ -2,4 +2,5 @@
 
 set -xeu
 udevadm control --reload-rules
-udevadm trigger
+# this is overload
+# udevadm trigger
