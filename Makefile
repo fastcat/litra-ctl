@@ -9,14 +9,16 @@ PKGVERREL=$(if $(PKGVERREL_git),$(patsubst v%,%,$(PKGVERREL_git)),$(error git de
 PKGVER=$(firstword $(subst -, ,$(PKGVERREL)))
 PKGREL=$(PKGVERREL:$(PKGVER)-%=%)
 
+GOFLAGS:=-ldflags="-s -w"
+
 compile:
-	go build -v ./...
+	go build $(GOFLAGS) -v ./...
 .PHONY: compile
 
 binary: $(BINARY)
 .PHONY: binary
 ${BINARY}: Makefile go.mod go.sum $(SOURCES)
-	go build -v -o $(BINARY) $(MAIN)
+	CGO_ENABLED=0 go build $(GOFLAGS) -v -o $(BINARY) $(MAIN)
 
 preinstall: binary
 	rm -f packaging/completion/*
