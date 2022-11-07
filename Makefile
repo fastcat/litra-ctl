@@ -31,11 +31,11 @@ install: binary preinstall
 	$(MAKE) install-only
 .PHONY: install
 install-only:
-	$(SUDO) install -v $(BINARY) $(PREFIX)/usr/bin/
-	$(SUDO) install -v -m 644 packaging/udev-rules/*.rules $(PREFIX)/lib/udev/rules.d/
-	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).bash /etc/bash_completion.d/$(BINARY)
-	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).zsh /usr/share/zsh/vendor-completions/_$(BINARY)
-	$(SUDO) install -v -m 644 packaging/completion/$(BINARY).fish /usr/share/fish/vendor_completions.d/$(BINARY).fish
+	$(SUDO) install -Dv $(BINARY) $(PREFIX)/usr/bin/
+	$(SUDO) install -Dv -m 644 packaging/udev-rules/*.rules $(PREFIX)/lib/udev/rules.d/
+	$(SUDO) install -Dv -m 644 packaging/completion/$(BINARY).bash /etc/bash_completion.d/$(BINARY)
+	$(SUDO) install -Dv -m 644 packaging/completion/$(BINARY).zsh /usr/share/zsh/vendor-completions/_$(BINARY)
+	$(SUDO) install -Dv -m 644 packaging/completion/$(BINARY).fish /usr/share/fish/vendor_completions.d/$(BINARY).fish
 .PHONY: install-only
 postinstall:
 	$(SUDO) ./packaging/post-install.sh
