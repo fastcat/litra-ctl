@@ -60,7 +60,7 @@ package-deb: binary preinstall
 # extra quoting on some args to work around checkinstall bugs:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=785441
 	set -eu ; cd packaging/checkinstall && \
-	libcversion=$$(dpkg --status libc6 | grep ^Version: | cut -d " " -f2) && \
+	libcversion=$$(dpkg --status libc6 | grep ^Version: | cut -d " " -f2 | cut -d- -f1) && \
 	fakeroot checkinstall \
 		--type=debian \
 		--install=no \
