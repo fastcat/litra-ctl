@@ -17,8 +17,14 @@ compile:
 
 binary: $(BINARY)
 .PHONY: binary
-${BINARY}: Makefile go.mod go.sum $(SOURCES)
+$(BINARY): Makefile go.mod go.sum $(SOURCES)
 	CGO_ENABLED=1 go build $(GOFLAGS) -v -o $(BINARY) $(MAIN)
+binary-docker: build/$(BINARY)
+.PHONY: binary-docker
+build/$(BINARY): Makefile go.mod go.sum $(SOURCES)
+	mkdir -p ./build
+	docker build -f Dockerfile.build . -t litra-ctl-build
+	false this doesn't work, need buildx or container hacks
 
 preinstall: binary
 	rm -f packaging/completion/*
@@ -53,7 +59,9 @@ packages: package-deb
 package-deb: binary preinstall
 # extra quoting on some args to work around checkinstall bugs:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=785441
-	set -eu ; cd packaging/checkinstall && fakeroot checkinstall \
+	set -eu ; cd packaging/checkinstall && \
+	libcversion=$$(dpkg --status libc6 | grep ^Version: | cut -d " " -f2) && \
+	fakeroot checkinstall \
 		--type=debian \
 		--install=no \
 		--fstrans=yes \
@@ -67,6 +75,7 @@ package-deb: binary preinstall
 		--maintainer="'Matthew Gabeler-Lee <cheetah@fastcat.org>'" \
 		--reset-uids=yes \
 		--backup=no \
+		--requires "'libc6 (>= $$libcversion)'" \
 		$(MAKE) -C ../../ SUDO= install-only \
 		</dev/null
 .PHONY: package-deb
