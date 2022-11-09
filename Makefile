@@ -18,7 +18,7 @@ compile:
 binary: $(BINARY)
 .PHONY: binary
 ${BINARY}: Makefile go.mod go.sum $(SOURCES)
-	CGO_ENABLED=0 go build $(GOFLAGS) -v -o $(BINARY) $(MAIN)
+	CGO_ENABLED=1 go build $(GOFLAGS) -v -o $(BINARY) $(MAIN)
 
 preinstall: binary
 	rm -f packaging/completion/*
