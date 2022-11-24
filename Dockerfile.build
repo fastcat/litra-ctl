@@ -1,0 +1,20 @@
+FROM golang:1.19-bullseye as build
+
+RUN apt-get update && apt-get -y install fakeroot checkinstall
+RUN addgroup --gid 1000 builder
+RUN adduser --uid 1000 --gid 1000 --disabled-password builder
+
+WORKDIR /usr/src/app
+RUN chown 1000:1000 .
+USER 1000
+
+# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
+COPY --chown=1000:1000 go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY --chown=1000:1000 . .
+RUN make binary
+
+FROM scratch as export
+
+COPY --from=build /usr/src/app/ /

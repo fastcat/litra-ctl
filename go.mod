@@ -3,7 +3,7 @@ module github.com/fastcat/litra-ctl
 go 1.19
 
 require (
-	github.com/derickr/go-litra-driver v0.0.0-20220524104025-ad78d5196d13
+	github.com/derickr/go-litra-driver v0.0.0-20221104155011-9fc8dc6f41b4
 	github.com/spf13/cobra v1.6.1
 )
 
