@@ -24,7 +24,7 @@ binary-docker: build/$(BINARY)
 build/$(BINARY): Makefile go.mod go.sum $(SOURCES)
 	mkdir -p ./build
 	docker build -f Dockerfile.build . -t litra-ctl-build
-	false this doesn't work, need buildx or container hacks
+	false "this doesn't work, need buildx or container hacks"
 
 preinstall: binary
 	rm -f packaging/completion/*
@@ -59,8 +59,11 @@ packages: package-deb
 package-deb: binary preinstall
 # extra quoting on some args to work around checkinstall bugs:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=785441
-	set -eu ; cd packaging/checkinstall && \
-	libcversion=$$(dpkg --status libc6 | grep ^Version: | cut -d " " -f2 | cut -d- -f1) && \
+# nm + grep gets us the newest glibc symbol version actually used
+	set -eu ; \
+	libcversion=$$(nm -D litra-ctl | grep -o "@GLIBC.*" | sort -u | sort -n | tail -n1 | cut -d_ -f2) && \
+	test -n "$$libcversion" && \
+	cd packaging/checkinstall && \
 	fakeroot checkinstall \
 		--type=debian \
 		--install=no \
