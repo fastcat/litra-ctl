@@ -4,7 +4,7 @@ SOURCES=$(shell find . -name \*.go)
 PREFIX?=
 SUDO?=sudo
 
-PKGVERREL_git=$(shell git describe --long --dirty=+)
+PKGVERREL_git=$(shell git describe --long --tags --dirty=+)
 PKGVERREL=$(if $(PKGVERREL_git),$(patsubst v%,%,$(PKGVERREL_git)),$(error git describe failed))
 PKGVER=$(firstword $(subst -, ,$(PKGVERREL)))
 PKGREL=$(PKGVERREL:$(PKGVER)-%=%)
